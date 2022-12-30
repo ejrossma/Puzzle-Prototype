@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] Transform pieceContainer;
     [SerializeField] int boardSize;
     [SerializeField] GameObject[] puzzlePieces;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +23,8 @@ public class GameManager : MonoBehaviour
             for (int j = 1; j < boardSize + 1; j++)
             {
                 int n = Random.Range(0, puzzlePieces.Length);
-                Instantiate(puzzlePieces[n], new Vector3(i, j, 0), Quaternion.identity);
+                GameObject temp = Instantiate(puzzlePieces[n], new Vector3(i - boardSize/2, j - boardSize/2, 0), Quaternion.identity);
+                temp.transform.parent = pieceContainer;
             }
         }
     }
