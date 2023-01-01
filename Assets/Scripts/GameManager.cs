@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Board Data")]
     [Tooltip("Where the pieces will be placed in the hierarchy")]
     [SerializeField] Transform pieceContainer;
     [Tooltip("Size of the board (boardSize x boardSize)")]
     [SerializeField] int boardSize;
     [SerializeField] GameObject[] puzzlePieces;
+
+    public Transform puzzleOrigin;
+    public float horizontalSpacing;
+    public float verticalSpacing;
     
     //gameBoard is generated from bottom left up
         //(0,0) is the bottom left piece
@@ -16,6 +21,9 @@ public class GameManager : MonoBehaviour
     //first value is x coord (horizontal)
     //second value is y coord (vertical)
     private GameObject[,] gameBoard;
+
+    
+
     
 
     // Start is called before the first frame update
@@ -32,20 +40,22 @@ public class GameManager : MonoBehaviour
     void generateBoard(int boardSize)
     {
         //internal piece data + visual for puzzle pieces
-        for (int i = 1; i < boardSize + 1; i++)
+        for (int i = 0; i < boardSize; i++)
         {
-            for (int j = 1; j < boardSize + 1; j++)
+            for (int j = 0; j < boardSize; j++)
             {
                 
                 int n = Random.Range(0, puzzlePieces.Length);
                 //instantiate a random puzzle piece
-                GameObject temp = Instantiate(puzzlePieces[n], new Vector3(i - boardSize/2, j - boardSize/2, 0), Quaternion.identity);
+                GameObject temp = Instantiate(puzzlePieces[n], 
+                                              new Vector3(i * horizontalSpacing + puzzleOrigin.position.x , j * verticalSpacing + puzzleOrigin.position.y, 0), 
+                                              Quaternion.identity);
                 //organize pieces in heirarchy
                 temp.transform.parent = pieceContainer;
                 //update piece data
-                temp.transform.GetComponent<Piece>().setPos(i - 1, j - 1);
+                temp.transform.GetComponent<Piece>().setPos(i, j);
                 //update board data
-                gameBoard[i-1,j-1] = temp;
+                gameBoard[i,j] = temp;
             }
         }
     }
