@@ -95,32 +95,17 @@ public class GameManager : MonoBehaviour
         //get values before swap
         int oneX = one.getXPos();
         int oneY = one.getYPos();
-
-        Debug.Log($"One X: {oneX}");
-        Debug.Log($"One Y: {oneY}");
-
-        Debug.Log($"Board X: {gameBoard[oneX,oneY].GetComponent<Piece>().getXPos()}");
-        Debug.Log($"Board Y: {gameBoard[oneX,oneY].GetComponent<Piece>().getYPos()}");
-        
-
         int twoX = two.getXPos();
         int twoY = two.getYPos();
 
-
+        //swap positions on game board
+        GameObject tempObj = gameBoard[oneX, oneY];
+        gameBoard[oneX, oneY] = two.gameObject;
+        gameBoard[twoX, twoY] = tempObj;
+        
         //swap positions on pieces
         one.setPos(twoX, twoY);
         two.setPos(oneX, oneY);
-
-        Debug.Log($"One X After Swap: {oneX}");
-        Debug.Log($"One Y After Swap: {oneY}");
-
-        //swap positions on game board
-        GameObject tempObj = gameBoard[oneX, oneY];
-        Debug.Log($"Before Swap one ({gameBoard[oneX, oneY].GetComponent<Piece>().getXPos()}, {gameBoard[oneX, oneY].GetComponent<Piece>().getYPos()})");
-        gameBoard[oneX, oneY] = two.gameObject;
-        Debug.Log($"After Swap one ({gameBoard[oneX, oneY].GetComponent<Piece>().getXPos()}, {gameBoard[oneX, oneY].GetComponent<Piece>().getYPos()})");
-        gameBoard[twoX, twoY] = tempObj;
-        
 
         //swap positions in world
         Vector3 tempVec = one.transform.position;
