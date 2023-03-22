@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Size of the board (boardSize x boardSize)")]
     [SerializeField] int boardSize;
     [SerializeField] GameObject[] puzzlePieces;
+    public float pieceScale;
+    [SerializeField] float scaleUpDuration;
+    [SerializeField] float scaleDownDuration;
 
     [Header("Board Layout")]
     public Transform puzzleOrigin;
@@ -61,26 +64,38 @@ public class GameManager : MonoBehaviour
         //2. if they do have one selected ensure that the 2 pieces are adjacent and then swap them
     public void managePiece(Piece piece)
     {
-        if (player.getSelected() == null) { player.selectPiece(piece); return;}
+        if (player.getSelected() == null) 
+        { 
+            player.selectPiece(piece);
+            //scale the new piece
+            StartCoroutine(smoothScale(piece.gameObject.transform, Vector3.one * pieceScale, scaleUpDuration));
+            return;
+        }
 
+        //get piece
+        Piece selectedPiece = player.getSelected();
+        //piece always gets scaled down if the player clicked on another piece
+        StartCoroutine(smoothScale(player.getSelected().gameObject.transform, Vector3.one, scaleDownDuration));
         //check if piece's position is 1 of the 4 adjacent to the selectedPiece
             //x, y + 1 || x, y - 1 || x + 1, y || x - 1, y
-        Piece selectedPiece = player.getSelected();
-        
         if (piece.getXPos() == selectedPiece.getXPos() && Mathf.Abs(piece.getYPos() - selectedPiece.getYPos()) == 1 ||
             Mathf.Abs(piece.getXPos() - selectedPiece.getXPos()) == 1  && piece.getYPos() == selectedPiece.getYPos())
         {
             swapPieces(selectedPiece, piece);
         }
-        else { player.selectPiece(piece); }
+        else 
+        {
+            //deselect current piece
+            player.selectPiece(null);
+        }
     }
 
     private void swapPieces(Piece one, Piece two)
     {
-        //change their positions in script
+        //change their positions on backend
         Piece tempPiece = one;
         one.setPos(two.getXPos(), two.getYPos());
-        two.setPos(one.getXPos(), one.getYPos());
+        two.setPos(tempPiece.getXPos(), tempPiece.getYPos());
 
         //change their positions in world
         Vector3 tempVec = one.transform.position;
@@ -94,4 +109,15 @@ public class GameManager : MonoBehaviour
     //got to find an efficient way to check for combos after player swaps pieces
     //AND when player completes a combo and pieces come falling down
     private bool comparePieces(Piece pieceOne, Piece pieceTwo) { return (pieceOne.pieceType == pieceTwo.pieceType) ? true : false; }
+
+    IEnumerator smoothScale(Transform pieceToScale, Vector3 targetScale, float scaleDuration)
+    {
+        Vector3 startScale = pieceToScale.localScale;
+        //get a value between 0 and 1 that represents how done the scaling process is
+        for (float t = 0; t < 1; t += Time.deltaTime / scaleDuration)
+        {
+            pieceToScale.localScale = Vector3.Lerp(startScale, targetScale, t);
+            yield return null;
+        }
+    }
 }

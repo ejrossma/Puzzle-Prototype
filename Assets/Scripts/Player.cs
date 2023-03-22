@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] GameManager gm;
     [SerializeField] int health;
     [SerializeField] int gold;
     [SerializeField] Piece selectedPiece;

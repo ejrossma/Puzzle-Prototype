@@ -27,7 +27,6 @@ public class Piece : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log("Clicked Piece");
         gm.managePiece(this);
     }
 }
