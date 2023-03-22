@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 46897300}
   - component: {fileID: 46897301}
   m_Layer: 0
-  m_Name: TD Background
+  m_Name: Tower Defense Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
