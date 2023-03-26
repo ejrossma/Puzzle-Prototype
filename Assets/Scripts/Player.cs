@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public void setHealth(int newHealth) { health = newHealth; }
     public int getHealth() { return health; }
     
+    public void addGold(int goldToAdd) { gold += goldToAdd; }
     public void setGold(int newGold) { gold = newGold; }
     public int getGold() { return gold; }
 

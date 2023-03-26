@@ -11,7 +11,6 @@ public class Piece : MonoBehaviour
     [SerializeField] int yPos;
     public enum PieceType { Circle, Square, Star, Triangle };
     public PieceType pieceType;
-    public bool partOfCombo;
 
     public void Start()
     {

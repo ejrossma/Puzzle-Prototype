@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +22,13 @@ public class GameManager : MonoBehaviour
     public Transform puzzleOrigin;
     public float horizontalSpacing;
     public float verticalSpacing;
+
+    [Header("Scaling")]
+    [SerializeField] float comboGoldScaling = 2f;
+
+    [Header("UI")]
+    public TMP_Text playerGoldText;
+    
     
     //gameBoard is generated from bottom left up
     //(0,0) is the bottom left piece & (boardSize - 1, boardSize - 1) is the top right piece
@@ -92,7 +101,6 @@ public class GameManager : MonoBehaviour
             for (int j = 0; j < boardSize; j++)
             {
                 //ensure not too many matching neighbors
-                    //want to avoid clumps of matching pieces which can lead to difficultly finding and generating solveable combos
                 int matchingNeighbors = 100;
                 while (matchingNeighbors > 1)
                 {
@@ -105,11 +113,15 @@ public class GameManager : MonoBehaviour
         }
 
         //after board is generated eliminate combos
-        List<Combo> combosToEliminate = findCombo();
-        foreach (Combo combo in combosToEliminate)
+        int comboCount = -1;
+        while (comboCount != 0)
         {
-            Debug.Log(combo);
-            eliminateCombo(combo);
+            List<Combo> combosToEliminate = findCombo();
+            comboCount = combosToEliminate.Count;
+            foreach (Combo combo in combosToEliminate)
+            {
+                eliminateCombo(combo);
+            }
         }
         
         //create piece GOs
@@ -174,23 +186,18 @@ public class GameManager : MonoBehaviour
         if (piece.getXPos() == selectedPiece.getXPos() && Mathf.Abs(piece.getYPos() - selectedPiece.getYPos()) == 1 ||
             Mathf.Abs(piece.getXPos() - selectedPiece.getXPos()) == 1  && piece.getYPos() == selectedPiece.getYPos())
         {
+            //swap the pieces
             swapPieces(selectedPiece, piece);
-            // if (findCombo())
+            //if there is a combo
+            handleCombo(findCombo());
+            
+            // int comboCount = -1;
+            // while (comboCount != 0)
             // {
-            //     Debug.Log("Found a combo");
-            //     return;
-            // }
-            // while (findCombo())
-            // {
-            //     Debug.Log("Found a combo");
-            //     return;
-            //     //remove the combo
-            //         //get rid of combo pieces by looping through and checking each piece for "partOfCombo"
-            //         //add to money equal to the value of that piece type
-            //         //have pieces above fall down
-            //         //replace fallen pieces with new ones
-            //         //check again for combos now that there are new pieces
-            //         //repeat if necessary
+            //     List<Combo> combos = findCombo();
+            //     comboCount = combos.Count;
+            //     if (comboCount > 0)
+            //         handleCombo(combos);
             // }
         }
         else 
@@ -231,17 +238,11 @@ public class GameManager : MonoBehaviour
         player.selectPiece(null);
     }
 
-    //got to find an efficient way to check for combos after player swaps pieces
-    //AND when player completes a combo and pieces come falling down
-
-    //return if a combo was found
-    //also set a flag on the pieces if they are part of the combo
-        //then loop through afterwards check
+    //return a list of combos found
     private List<Combo> findCombo()
     {
         List<Combo> combos = new List<Combo>();
-        //for each column
-            //check for a combo
+        //for each column check for a combo
         for (int x = 0; x < boardSize; x++)
         {
             int comboCount = 1;
@@ -274,11 +275,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //for each row
-            //check for a combo
-        
-        //THIS CANT REACH ELSE IF THE LOOPS ENDS
-            //SO AFTER LOOP NEED TO CHECK COMBO COUNT
+        //for each row check for a combo
         for (int y = 0; y < boardSize; y++)
         {
             int comboCount = 1;
@@ -313,37 +310,85 @@ public class GameManager : MonoBehaviour
         return combos;
     }
 
+    private void handleCombo(List<Combo> combos)
+    {
+        foreach (Combo combo in combos)
+        {
+            //step 1: give the player money to reward them
+            player.addGold((int) (combo.length * comboGoldScaling) );
+
+            //step 2: add a way on screen to track the player's money
+            playerGoldText.text = $"Gold: {player.getGold()}";
+
+            //step 3: get all the right pieces to dissappear
+            for (int i = 0; i < combo.length; i++)
+            {
+                int indexToRemove = combo.endIndex - i;
+                if (combo.isRow)
+                {
+                    if (gameBoard[indexToRemove, combo.index].activeInHierarchy)
+                        gameBoard[indexToRemove, combo.index].SetActive(false);
+                }
+                else
+                {
+                    if (gameBoard[indexToRemove, combo.index].activeInHierarchy)
+                        gameBoard[combo.index, indexToRemove].SetActive(false);
+                }
+            }
+        }
+
+        //step 4: have existing pieces replace the current ones
+
+        //step 5
+        //after going through each combo check for combos again
+        
+        //for each combo
+            //remove the combo
+                //get rid of combo pieces by looping through and checking each piece for "partOfCombo"
+                //add to money equal to the value of that piece type
+                //have pieces above fall down
+                //replace fallen pieces with new ones
+                //check again for combos now that there are new pieces
+                //repeat if necessary
+    }
+
+    //get a piece that is in the middle of combo.length to change
     private void eliminateCombo(Combo combo)
     {
+        int distanceFromStart;
+        //get the middle index
+        if (combo.length % 2 == 1)
+        {
+            distanceFromStart = combo.length / 2;
+        }
+        //choose one of the two middle indices
+        else
+        {
+            int n = Random.Range(0,1);
+            distanceFromStart = (combo.length / 2) - n;
+        }
+        int indexToChange = combo.endIndex - combo.length + distanceFromStart;
+        int pieceToChangeTo = Random.Range(0, puzzlePieces.Length);
+
         if (combo.isRow)
         {
-
+            //ensure its a different piece
+            while (pieceToChangeTo == intGameBoard[indexToChange, combo.index])
+            {
+                pieceToChangeTo = Random.Range(0, puzzlePieces.Length);
+            }
+            intGameBoard[indexToChange, combo.index] = pieceToChangeTo;
         }
-        else if (!combo.isRow)
+        else
         {
-
+            //ensure its a different piece
+            while (pieceToChangeTo == intGameBoard[combo.index, indexToChange])
+            {
+                pieceToChangeTo = Random.Range(0, puzzlePieces.Length);
+            }
+            intGameBoard[combo.index, indexToChange] = pieceToChangeTo;
         }
     }
-
-    //combos will always be trackable backwards
-    private void setCombo(Combo combo)
-    {
-        //for the length of the combo
-        for (int i = 0; i < combo.length; i++)
-        {
-            //depending on row or column start from index of combo end and work backwards to mark all parts of the combo
-            if (combo.isRow)
-            {
-                gameBoard[combo.endIndex - i, combo.index].GetComponent<Piece>().partOfCombo = true;
-            }
-            else if (!combo.isRow)
-            {
-                gameBoard[combo.index, combo.endIndex - i].GetComponent<Piece>().partOfCombo = true;
-            }
-        }
-    }
-
-    private bool comparePieces(Piece pieceOne, Piece pieceTwo) { return (pieceOne.pieceType == pieceTwo.pieceType) ? true : false; }
 
     IEnumerator smoothScale(Transform pieceToScale, Vector3 targetScale, float scaleDuration)
     {
