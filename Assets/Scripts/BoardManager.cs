@@ -359,6 +359,9 @@ public class BoardManager : MonoBehaviour
                 intGameBoard[x, y] = n;
             }
         }
+
+        //step 5: update board to match intGameBoard
+        //FIRST GET OBJECT POOLING WORKING SO I DON'T HAVE TO DESTROY
     }
 
     //get a piece that is in the middle of combo.length to change

@@ -775,9 +775,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1275331090}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d79914cc62d8d4749bba170164de287b, type: 3}
+  m_Script: {fileID: 11500000, guid: f2423483be7cd6044a6f8b43c6ec7111, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pooledCircles: []
+  circleToPool: {fileID: 4861225829069017989, guid: e35dfb0f1ef3a1944bac310e2b3572d8, type: 3}
+  pooledSquares: []
+  squareToPool: {fileID: 7721225935023921193, guid: 1f51d7e8d7144374d93e81a417555fed, type: 3}
+  pooledStars: []
+  starToPool: {fileID: 6092568404048251349, guid: 6d0cd3299a911394695e1d2945350b9c, type: 3}
+  pooledTriangles: []
+  triangleToPool: {fileID: 5403295156606477289, guid: 919009428d7957c4eb01dfb7199f61fd, type: 3}
+  amountToPool: 10
 --- !u!1 &1434263780
 GameObject:
   m_ObjectHideFlags: 0
