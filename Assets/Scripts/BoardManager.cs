@@ -5,6 +5,7 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     public Player player;
+    public ObjectPool op;
 
     [Header("Board Data")]
     [Tooltip("Where the pieces will be placed in the hierarchy")]
@@ -63,15 +64,6 @@ public class BoardManager : MonoBehaviour
         gameBoard = new GameObject[boardSize, boardSize];
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        gameBoard = new GameObject[boardSize, boardSize];
-        setupIntBoard();
-        //generate the initial board
-        generateBoard(boardSize);
-    }
-
     //set to -1 to ensure that the values aren't conflicting with piece values for checkNeighbors()
     public void setupIntBoard()
     {
@@ -126,9 +118,9 @@ public class BoardManager : MonoBehaviour
             for (int j = 0; j < boardSize; j++)
             {
                 int piece = intGameBoard[i,j];
-                GameObject temp = Instantiate(puzzlePieces[piece], 
-                                              new Vector3(i * horizontalSpacing + puzzleOrigin.position.x , j * verticalSpacing + puzzleOrigin.position.y, 0), 
-                                              Quaternion.identity);
+                GameObject temp = op.GetPooledObject(piece);
+                temp.SetActive(true);
+                temp.transform.position = new Vector3(i * horizontalSpacing + puzzleOrigin.position.x , j * verticalSpacing + puzzleOrigin.position.y, 0);
                 //organize pieces in heirarchy
                 temp.transform.parent = pieceContainer;
                 //update piece data
@@ -186,7 +178,8 @@ public class BoardManager : MonoBehaviour
             swapPieces(selectedPiece, piece);
             //if there is a combo
             handleCombo(findCombo());
-            
+
+            //TODO - once handle combo is tested and works correctly
             // int comboCount = -1;
             // while (comboCount != 0)
             // {
@@ -336,12 +329,19 @@ public class BoardManager : MonoBehaviour
         {
             for (int y = 0; y < boardSize; y++)
             {
+                //if the piece needs to be replaced
                 if (intGameBoard[x, y] == -1)
                 {
+                    //search the values directly above it to find if there are valid ones to fall down
                     int i = y+1;
-                    while (intGameBoard[x, i] == -1)
+                    while (i < boardSize && intGameBoard[x, i] == -1)
                         i++;
-                    //drop the value found down
+                    
+                    //wasn't able to find a valid value
+                    if (i >= boardSize)
+                        continue;
+                    
+                    //found a valid value, so drop it down
                     intGameBoard[x, y] = intGameBoard[x, i];
                     //set to -1 since it needs to be replaced now
                     intGameBoard[x, i] = -1;

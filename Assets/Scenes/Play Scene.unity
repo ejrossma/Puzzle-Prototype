@@ -308,6 +308,7 @@ Transform:
   - {fileID: 237769222}
   - {fileID: 46897300}
   - {fileID: 670618613}
+  - {fileID: 387047657}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -341,6 +342,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 108891682}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &387047656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 387047657}
+  m_Layer: 0
+  m_Name: Piece Object Pool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &387047657
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387047656}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 108891682}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &670618612
 GameObject:
@@ -588,7 +620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gm: {fileID: 1275331091}
-  health: 0
+  health: 100
   gold: 0
   playerGoldText: {fileID: 1434263782}
   playerHealthText: {fileID: 0}
@@ -753,6 +785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 963482063}
+  op: {fileID: 1275331094}
   pieceContainer: {fileID: 237769222}
   boardSize: 5
   puzzlePieces:
@@ -787,6 +820,7 @@ MonoBehaviour:
   pooledTriangles: []
   triangleToPool: {fileID: 5403295156606477289, guid: 919009428d7957c4eb01dfb7199f61fd, type: 3}
   amountToPool: 10
+  poolContainer: {fileID: 387047657}
 --- !u!1 &1434263780
 GameObject:
   m_ObjectHideFlags: 0
