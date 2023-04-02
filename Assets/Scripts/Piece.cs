@@ -5,6 +5,7 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     private GameManager gm;
+    private BoardManager bm;
 
     [Header("Piece Data")]
     [SerializeField] int xPos;
@@ -15,6 +16,7 @@ public class Piece : MonoBehaviour
     public void Start()
     {
         gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        bm = GameObject.Find("Game Manager").GetComponent<BoardManager>();
     }
 
     public void setPos(int x, int y)
@@ -27,6 +29,6 @@ public class Piece : MonoBehaviour
 
     void OnMouseDown()
     {
-        gm.managePiece(this);
+        bm.managePiece(this);
     }
 }

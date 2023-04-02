@@ -590,7 +590,8 @@ MonoBehaviour:
   gm: {fileID: 1275331091}
   health: 0
   gold: 0
-  selectedPiece: {fileID: 0}
+  playerGoldText: {fileID: 1434263782}
+  playerHealthText: {fileID: 0}
 --- !u!4 &963482064
 Transform:
   m_ObjectHideFlags: 0
@@ -700,6 +701,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1275331092}
   - component: {fileID: 1275331091}
+  - component: {fileID: 1275331093}
+  - component: {fileID: 1275331094}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -720,21 +723,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 963482063}
-  pieceContainer: {fileID: 237769222}
-  boardSize: 5
-  puzzlePieces:
-  - {fileID: 4861225829069017989, guid: e35dfb0f1ef3a1944bac310e2b3572d8, type: 3}
-  - {fileID: 7721225935023921193, guid: 1f51d7e8d7144374d93e81a417555fed, type: 3}
-  - {fileID: 6092568404048251349, guid: 6d0cd3299a911394695e1d2945350b9c, type: 3}
-  - {fileID: 5403295156606477289, guid: 919009428d7957c4eb01dfb7199f61fd, type: 3}
-  pieceScale: 1.25
-  scaleUpDuration: 0.1
-  scaleDownDuration: 0.2
-  puzzleOrigin: {fileID: 670618613}
-  horizontalSpacing: 1.25
-  verticalSpacing: 1
-  comboGoldScaling: 2
-  playerGoldText: {fileID: 1434263782}
+  bm: {fileID: 1275331093}
+  startingDifficulty: 2
 --- !u!4 &1275331092
 Transform:
   m_ObjectHideFlags: 0
@@ -750,6 +740,44 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1275331093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275331090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa790c124351dc4b88a1158ace60a56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 963482063}
+  pieceContainer: {fileID: 237769222}
+  boardSize: 5
+  puzzlePieces:
+  - {fileID: 4861225829069017989, guid: e35dfb0f1ef3a1944bac310e2b3572d8, type: 3}
+  - {fileID: 7721225935023921193, guid: 1f51d7e8d7144374d93e81a417555fed, type: 3}
+  - {fileID: 6092568404048251349, guid: 6d0cd3299a911394695e1d2945350b9c, type: 3}
+  - {fileID: 5403295156606477289, guid: 919009428d7957c4eb01dfb7199f61fd, type: 3}
+  puzzleOrigin: {fileID: 670618613}
+  horizontalSpacing: 1.25
+  verticalSpacing: 1
+  pieceScale: 1.25
+  scaleUpDuration: 0.1
+  scaleDownDuration: 0.2
+--- !u!114 &1275331094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275331090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79914cc62d8d4749bba170164de287b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1434263780
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,6 +924,7 @@ GameObject:
   - component: {fileID: 1450015127}
   - component: {fileID: 1450015126}
   - component: {fileID: 1450015125}
+  - component: {fileID: 1450015128}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -969,6 +998,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1450015128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450015124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &2086018590
 GameObject:
   m_ObjectHideFlags: 0
