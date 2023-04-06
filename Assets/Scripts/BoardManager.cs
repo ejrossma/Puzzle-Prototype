@@ -22,6 +22,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] float scaleUpDuration;
     [SerializeField] float scaleDownDuration;
 
+    public bool showLogs;
+
     //gameBoard is generated from bottom left up
     //(0,0) is the bottom left piece & (boardSize - 1, boardSize - 1) is the top right piece
     //first value is x coord (horizontal)
@@ -95,7 +97,7 @@ public class BoardManager : MonoBehaviour
                     n = Random.Range(0, puzzlePieces.Length);
                     matchingNeighbors = checkNeighbors(i, j, n);
                 }
-                intGameBoard[i,j] = n;
+                intGameBoard[i, j] = n;
                 prev = n;
             }
         }
@@ -113,25 +115,30 @@ public class BoardManager : MonoBehaviour
         }
         
         //create piece GOs
-        for (int i = 0; i < boardSize; i++)
+        for (int x = 0; x < boardSize; x++)
         {
-            for (int j = 0; j < boardSize; j++)
+            for (int y = 0; y < boardSize; y++)
             {
-                int piece = intGameBoard[i,j];
-                GameObject temp = op.GetPooledObject(piece);
-                temp.SetActive(true);
-                temp.transform.position = new Vector3(i * horizontalSpacing + puzzleOrigin.position.x , j * verticalSpacing + puzzleOrigin.position.y, 0);
-                //organize pieces in heirarchy
-                temp.transform.parent = pieceContainer;
-                //update piece data
-                temp.transform.GetComponent<Piece>().setPos(i, j);
-                //update board data
-                gameBoard[i,j] = temp;
+                //place piece at x,y on the board
+                placePiece(op.GetPooledObject(intGameBoard[x, y]), x, y);
             }
+        }
+
+        //Log what board is on backend
+        for (int y = 4; y >= 0; y--)
+        {
+            string row = "";
+            row += $"Row #{y} - ";
+            for (int x = 0; x < boardSize; x++)
+            {
+                row += intGameBoard[x, y];
+                row += " ";
+            }
+            Log(row);
         }
     }
 
-        private int checkNeighbors(int i, int j, int n)
+    private int checkNeighbors(int i, int j, int n)
     {
         int count = 0;
 
@@ -151,12 +158,36 @@ public class BoardManager : MonoBehaviour
         return count;
     }
 
+    public void placePiece(GameObject pieceToPlace, int x, int y)
+    {
+        if (!pieceToPlace)
+        {
+            Log("Piece is null");
+            return;
+        }
+
+        pieceToPlace.SetActive(true);
+        pieceToPlace.transform.position = new Vector3(x * horizontalSpacing + puzzleOrigin.position.x , y * verticalSpacing + puzzleOrigin.position.y, 0);
+        //organize piece in heirarchy
+        pieceToPlace.transform.parent = pieceContainer;
+        //update piece data
+        pieceToPlace.transform.GetComponent<Piece>().setPos(x, y);
+        //update board data
+        gameBoard[x, y] = pieceToPlace;
+    }
+
+    public void boardToObjectPool(int x, int y)
+    {
+        gameBoard[x, y].SetActive(false);
+        gameBoard[x, y].transform.parent = op.poolContainer;
+    }
+
     //when the player clicks on a piece
         //1. if they don't have one selected set that piece as their selected
         //2. if they do have one selected ensure that the 2 pieces are adjacent and then swap them
     public void managePiece(Piece piece)
     {
-        if (player.getSelected() == null) 
+        if (player.getSelected() == null)
         {
             //select the new piece 
             player.selectPiece(piece);
@@ -176,18 +207,15 @@ public class BoardManager : MonoBehaviour
         {
             //swap the pieces
             swapPieces(selectedPiece, piece);
-            //if there is a combo
-            handleCombo(findCombo());
-
-            //TODO - once handle combo is tested and works correctly
-            // int comboCount = -1;
-            // while (comboCount != 0)
-            // {
-            //     List<Combo> combos = findCombo();
-            //     comboCount = combos.Count;
-            //     if (comboCount > 0)
-            //         handleCombo(combos);
-            // }
+            //while there is a combo continue to handle them
+            int comboCount = -1;
+            while (comboCount != 0)
+            {
+                List<Combo> combos = findCombo();
+                comboCount = combos.Count;
+                if (comboCount > 0)
+                    handleCombo(combos);
+            }
         }
         else 
         {
@@ -315,10 +343,14 @@ public class BoardManager : MonoBehaviour
                 if (combo.isRow)
                 {
                     intGameBoard[indexToRemove, combo.index] = -1;
+                    //a combo'd piece should be removed from board to object pool
+                    boardToObjectPool(indexToRemove, combo.index);
                 }
                 else
                 {
                     intGameBoard[combo.index, indexToRemove] = -1;
+                    //a combo'd piece should be removed from board to object pool
+                    boardToObjectPool(combo.index, indexToRemove);
                 }
             }
         }
@@ -343,10 +375,29 @@ public class BoardManager : MonoBehaviour
                     
                     //found a valid value, so drop it down
                     intGameBoard[x, y] = intGameBoard[x, i];
+                    //place the piece into its correct spot now
+                    placePiece(op.GetPooledObject(intGameBoard[x, y]), x, y);
+                    
                     //set to -1 since it needs to be replaced now
                     intGameBoard[x, i] = -1;
+                    //hide piece that needs to be replaced
+                    boardToObjectPool(x, i);
                 }
             }
+        }
+
+        Log("Before Generating New Pieces: ");
+
+        for (int y = 4; y >= 0; y--)
+        {
+            string row = "";
+            row += $"Row #{y} - ";
+            for (int x = 0; x < boardSize; x++)
+            {
+                row += intGameBoard[x, y];
+                row += " ";
+            }
+            Log(row);
         }
 
         //step 4: generate new pieces to replace empty spots
@@ -355,13 +406,31 @@ public class BoardManager : MonoBehaviour
         {
             for (int y = 0; y < boardSize; y++)
             {
-                int n = Random.Range(0, puzzlePieces.Length);
-                intGameBoard[x, y] = n;
+                if (intGameBoard[x, y] == -1)
+                {
+                    //generate new intGameBoard value
+                    int n = Random.Range(0, puzzlePieces.Length);
+                    intGameBoard[x, y] = n;
+
+                    //place new piece at x,y on the board
+                    placePiece(op.GetPooledObject(intGameBoard[x, y]), x, y);
+                }
             }
         }
 
-        //step 5: update board to match intGameBoard
-        //FIRST GET OBJECT POOLING WORKING SO I DON'T HAVE TO DESTROY
+        Log("After Generating New Pieces: ");
+
+        for (int y = 4; y >= 0; y--)
+        {
+            string row = "";
+            row += $"Row #{y} - ";
+            for (int x = 0; x < boardSize; x++)
+            {
+                row += intGameBoard[x, y];
+                row += " ";
+            }
+            Log(row);
+        }
     }
 
     //get a piece that is in the middle of combo.length to change
@@ -411,5 +480,11 @@ public class BoardManager : MonoBehaviour
             pieceToScale.localScale = Vector3.Lerp(startScale, targetScale, t);
             yield return null;
         }
+    }
+
+    private void Log(string output)
+    {
+        if (showLogs)
+            Debug.Log(output);
     }
 }

@@ -799,6 +799,7 @@ MonoBehaviour:
   pieceScale: 1.25
   scaleUpDuration: 0.1
   scaleDownDuration: 0.2
+  showLogs: 1
 --- !u!114 &1275331094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -819,7 +820,7 @@ MonoBehaviour:
   starToPool: {fileID: 6092568404048251349, guid: 6d0cd3299a911394695e1d2945350b9c, type: 3}
   pooledTriangles: []
   triangleToPool: {fileID: 5403295156606477289, guid: 919009428d7957c4eb01dfb7199f61fd, type: 3}
-  amountToPool: 10
+  amountToPool: 15
   poolContainer: {fileID: 387047657}
 --- !u!1 &1434263780
 GameObject:

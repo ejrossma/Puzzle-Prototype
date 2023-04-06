@@ -17,7 +17,7 @@ public class ObjectPool : MonoBehaviour
 
     public Transform poolContainer;
 
-    void Start()
+    void Awake()
     {
         pooledCircles = new List<GameObject>();
         pooledSquares = new List<GameObject>();
